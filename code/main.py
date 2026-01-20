@@ -1,11 +1,14 @@
 import os
+from pathlib import Path
 
 from skimage.io import imread
 from skimage.transform import resize
 import numpy as np
+from sklearn.model_selection import train_test_split    
 
 # prepare data
-input_dir = '/clf-data'
+current_dir = Path(__file__).parent
+input_dir = current_dir / 'clf-data'
 categories = ['empty', 'not_empty']
 
 data = []
@@ -15,13 +18,14 @@ for category_idx, category in enumerate(categories):
         img_path = os.path.join(input_dir, category, file)
         img = imread(img_path)
         img = resize(img, (15, 15))  # resize to 64x64
-        data.append(img.flatted())  # flatten the image
+        data.append(img.flatten())  # flatten the image
         labels.append(category_idx)
 
 data = np.asarray(data)
 labels = np.asarray(labels)
 
 # train / test split
+x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=0.2, shuffle=True,stratify=labels)
 
 # train classifier
 
